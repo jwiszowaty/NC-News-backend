@@ -5,5 +5,7 @@ exports.selectAllTopics = () => {
         .query(
         `SELECT * FROM topics`
         )
-        .then((result) => result.rows)
+        .then((result) => {
+                return result.rows
+        })
 }

@@ -12,25 +12,25 @@ afterAll(() => {
     db.end()
 })
 
-describe('GET /api/topics', () => {
-    it('return status 200', () => {
+describe('errors - 404', () => {
+    it('404 when route does not exist', () => {
         return request(app)
-        .get('/api/topics')
-        .expect(200)
-    })
-
-    it('response has the correct number of topic objects i.e. contains all the topics', () => {
-        return request(app)
-        .get('/api/topics')
-        .expect(200)
+        .get('/api/notAValidPath')
+        .expect(404)
         .then(({body}) => {
-            expect(body.message).toHaveLength(3)
+            console.log(body.message);
+            expect(body.message).toBe('No such path...\n...yet');
         })
     })
+})
 
-    it('404 Not Found when route does not exist', () => {
+describe('GET /api/topics', () => {
+    it('returns status 200 and the correct number of topic objects i.e. contains all the topics', () => {
         return request(app)
-        .get('/api/topic')
-        .expect(404)
+        .get('/api/topics')
+        .expect(200)
+            .then(({ body }) => {
+            expect(body.message).toHaveLength(3)
+        })
     })
 })
