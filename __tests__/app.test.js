@@ -31,3 +31,16 @@ describe('GET /api/topics', () => {
         })
     })
 })
+describe('GET /api', () => {
+    it('return status 200 and the list of endpoints available', () => {
+        request(app)
+        .get('/api')
+        .expect(200)
+            .then(({body}) => {
+                expect(Object.keys(body.endpoints)).toHaveLength(3)
+                expect(Object.keys(body.endpoints).includes('GET /api')).toBe(true)
+                expect(Object.keys(body.endpoints).includes('GET /api/topics')).toBe(true)
+                expect(Object.keys(body.endpoints).includes('GET /api/articles')).toBe(true)
+        })
+    })
+})
