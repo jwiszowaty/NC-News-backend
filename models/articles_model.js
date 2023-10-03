@@ -6,6 +6,6 @@ exports.selectArticleById = async (article_id) => {
         return Promise.reject({status: 404, msg: 'No articles found'})
     }
     else {
-        return result.rows
+        return result.rows[0]
     }
 }
