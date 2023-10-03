@@ -27,8 +27,9 @@ describe('GET /api/topics', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
-        .then(({ body }) => {
-            expect(body.message).toHaveLength(3)
+            .then(({ body }) => {
+            console.log(body);
+            expect(body.topics).toHaveLength(3)
         })
     })
 })
@@ -37,11 +38,10 @@ describe('GET /api', () => {
         request(app)
         .get('/api')
         .expect(200)
-        .then(({body}) => {
+            .then(({ body }) => {
+            console.log(Object.keys(body.endpoints));
             expect(Object.keys(body.endpoints)).toHaveLength(3)
-            expect(Object.keys(body.endpoints).includes('GET /api')).toBe(true)
-            expect(Object.keys(body.endpoints).includes('GET /api/topics')).toBe(true)
-            expect(Object.keys(body.endpoints).includes('GET /api/articles')).toBe(true)
+            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id' ])
         })
     })
 })
@@ -62,7 +62,7 @@ describe('GET /api/articles/:article_id', () => {
             votes: 100,
             article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
             }
-        expect(body.article_request).toStrictEqual(article_1)
+        expect(body.article).toStrictEqual(article_1)
     
         })
     })
