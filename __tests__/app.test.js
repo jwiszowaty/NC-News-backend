@@ -36,8 +36,11 @@ describe('GET /api', () => {
         request(app)
         .get('/api')
         .expect(200)
-            .then(({ body }) => {
-                expect(body.message).toHaveLength(3)
+            .then(({body}) => {
+                expect(Object.keys(body.endpoints)).toHaveLength(3)
+                expect(Object.keys(body.endpoints).includes('GET /api')).toBe(true)
+                expect(Object.keys(body.endpoints).includes('GET /api/topics')).toBe(true)
+                expect(Object.keys(body.endpoints).includes('GET /api/articles')).toBe(true)
         })
     })
 })
