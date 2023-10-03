@@ -3,7 +3,6 @@ const data = require('../db/data/test-data/index')
 const request = require('supertest')
 const app = require('../db/app')
 const db = require("../db/connection")
-
 beforeEach(() => {
     return seed(data)
 })
@@ -18,18 +17,16 @@ describe('errors - 404', () => {
         .get('/api/notAValidPath')
         .expect(404)
         .then(({body}) => {
-            console.log(body.message);
             expect(body.message).toBe('No such path...\n...yet');
         })
     })
 })
-
 describe('GET /api/topics', () => {
     it('returns status 200 and the correct number of topic objects i.e. contains all the topics', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
-            .then(({ body }) => {
+        .then(({ body }) => {
             expect(body.message).toHaveLength(3)
         })
     })
