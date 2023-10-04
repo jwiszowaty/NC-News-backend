@@ -3,6 +3,7 @@ const app = express();
 const { getTopics } = require("../controllers/topics_controller");
 const { getEndpoints } = require("../controllers/endpoints_controller");
 const { getArticleById } = require("../controllers/articles_controller")
+const { getCommentsByArticleId } = require("../controllers/comments_controller")
 const {
   handleCustomErrors,
   handlePsqlErrors,
@@ -15,6 +16,7 @@ app.get("/api/topics", getTopics)
 
 app.get("/api/articles/:article_id", getArticleById)
 
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId)
 app.use(handleCustomErrors)
 app.use(handlePsqlErrors)
 app.use(handleServerErrors)

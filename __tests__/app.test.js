@@ -28,7 +28,6 @@ describe('GET /api/topics', () => {
         .get('/api/topics')
         .expect(200)
             .then(({ body }) => {
-            console.log(body);
             expect(body.topics).toHaveLength(3)
         })
     })
@@ -39,13 +38,11 @@ describe('GET /api', () => {
         .get('/api')
         .expect(200)
             .then(({ body }) => {
-            console.log(Object.keys(body.endpoints));
-            expect(Object.keys(body.endpoints)).toHaveLength(3)
-            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id' ])
+            expect(Object.keys(body.endpoints)).toHaveLength(4)
+            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id', 'GET /api/articles/:article_id/comments' ])
         })
     })
 })
-
 describe('GET /api/articles/:article_id', () => {
     it('returns status 200 and the article requested', () => {
         return request(app)
@@ -77,6 +74,36 @@ describe('GET /api/articles/:article_id', () => {
     it('returns status 400 when article_id is not an integer', () => {
         return request(app)
         .get('/api/articles/not-an-id')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid input")
+        })
+    })
+})
+describe('GET /api/articles/:article_id/comments', () => {
+    it('return status 200 and an array of comments for the given article_id', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({body}) => {
+            const expectedKeys = ["comment_id", "votes", "created_at", "author", "body", "article_id"]
+            expect(body.comments).toBeSortedBy("created_at", { descending: true })
+            body.comments.forEach((comment) => {
+                expect(Object.keys(comment)).toEqual(expect.arrayContaining(expectedKeys))
+            })
+        })
+    })
+    it('return status 404 when article_id does not exist', () => {
+        return request(app)
+        .get('/api/articles/9999/comments')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("No comments found for this article")
+        })
+    })
+    it('return status 400 when passed article_id is not integer', () => {
+        return request(app)
+        .get('/api/articles/not-an-id/comments')
         .expect(400)
         .then(({body}) => {
             expect(body.msg).toBe("Invalid input")
