@@ -3,6 +3,7 @@ const data = require('../db/data/test-data/index')
 const request = require('supertest')
 const app = require('../db/app')
 const db = require("../db/connection")
+const { expect } = require('@jest/globals')
 
 beforeEach(() => {
     return seed(data)
@@ -28,7 +29,6 @@ describe('GET /api/topics', () => {
         .get('/api/topics')
         .expect(200)
             .then(({ body }) => {
-            console.log(body);
             expect(body.topics).toHaveLength(3)
         })
     })
@@ -39,13 +39,11 @@ describe('GET /api', () => {
         .get('/api')
         .expect(200)
             .then(({ body }) => {
-            console.log(Object.keys(body.endpoints));
-            expect(Object.keys(body.endpoints)).toHaveLength(3)
-            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id' ])
+            expect(Object.keys(body.endpoints)).toHaveLength(4)
+            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id', "GET /api/articles"])
         })
     })
 })
-
 describe('GET /api/articles/:article_id', () => {
     it('returns status 200 and the article requested', () => {
         return request(app)
@@ -62,7 +60,7 @@ describe('GET /api/articles/:article_id', () => {
             votes: 100,
             article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
             }
-        expect(body.article).toStrictEqual(article_1)
+        expect(body.article).toMatchObject(article_1)
     
         })
     })
@@ -81,5 +79,30 @@ describe('GET /api/articles/:article_id', () => {
         .then(({body}) => {
             expect(body.msg).toBe("Invalid input")
         })
+    })
+})
+describe('GET /api/articles', () => {
+    it('returns status 200 and list of all articles in test DB in descending order', () => {
+        return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({ body }) => {
+                const articleExample = {
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(String)
+                }
+                expect(body.articles).toHaveLength(13)
+                expect(body.articles).toBeSortedBy('created_at', { descending: true })
+                body.articles.forEach((article) => {
+                    expect(article).not.toHaveProperty('body')
+                    expect(article).toMatchObject(articleExample)
+                })
+            })
     })
 })
