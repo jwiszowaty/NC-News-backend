@@ -116,8 +116,25 @@ describe('POST /api/articles/:article_id/comments', () => {
         .post('/api/articles/1/comments')
         .send({body:'NEW COMMENT', author: 'butter_bridge'})
         .expect(201)
-            .then(({ body }) => {
-                // ADD expect
+        .then(({ body }) => {
+            const newCommentObject = {
+                comment_id: 19,
+                body: 'NEW COMMENT',
+                article_id: 1,
+                author: 'butter_bridge',
+                votes: 0,
+                created_at: expect.any(String)
+            }
+            expect(body.comment).toMatchObject(newCommentObject)
+        })
+    })
+    it('returns status 400, when either body or author is missing', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({author: 'butter_bridge'})
+        .expect(400)
+        .then(({body}) => {
+           expect(body.msg).toBe('Failing row contains')
         })
     })
 })

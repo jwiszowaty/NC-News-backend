@@ -14,7 +14,6 @@ exports.postComment = async (req, res, next) => {
         const { body, author } = req.body
         const { article_id } = req.params
         const comment = await insertComment(body, author, article_id)
-        console.log(comment);
         return res.status(201).send({ comment })
     } catch (err) {
         next(err)
