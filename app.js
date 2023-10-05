@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
-const { getTopics } = require("../controllers/topics_controller");
-const { getEndpoints } = require("../controllers/endpoints_controller");
-const { getCommentsByArticleId, postComment} = require("../controllers/comments_controller")
-const { getArticleById , getArticles} = require("../controllers/articles_controller")
+const { getTopics } = require("./controllers/topics_controller");
+const { getEndpoints } = require("./controllers/endpoints_controller");
+const { getCommentsByArticleId, postComment} = require("./controllers/comments_controller")
+const { getArticleById , getArticles} = require("./controllers/articles_controller")
 const {
   handleCustomErrors,
   handlePsqlErrors,

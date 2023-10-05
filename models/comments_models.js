@@ -1,5 +1,4 @@
-const db = require("../db/connection")
-const articles = require("../db/data/test-data/articles")
+const db = require("../connection")
 
 exports.selectCommentsByArticleId = async (article_id) => {
     const result = await db.query(

@@ -1,11 +1,8 @@
 const seed = require('../db/seeds/seed')
 const data = require('../db/data/test-data/index')
 const request = require('supertest')
-const app = require('../db/app')
-const db = require("../db/connection")
-const { expect } = require('@jest/globals')
-const { log } = require('console')
-
+const app = require('../app')
+const db = require("../connection")
 
 beforeEach(() => {
     return seed(data)
