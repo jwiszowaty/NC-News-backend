@@ -3,7 +3,6 @@ const data = require('../db/data/test-data/index')
 const request = require('supertest')
 const app = require('../db/app')
 const db = require("../db/connection")
-const { expect } = require('@jest/globals')
 const articles = require('../db/data/test-data/articles')
 
 beforeEach(() => {
@@ -107,16 +106,18 @@ describe('GET /api/articles', () => {
             })
     })
 })
-// describe('PATCH /api/articles/:article_id', () => {
-//     it('returns status 200 and the article and updates the votes number', () => {
-//         for (let i = 0; i < articles.length; i++) {
-//             return request(app)
-//             .patch(`/api/articles/${i+1}`)
-//             .send({inc_vote: 1})
-//             .expect(200)
-//             .then(({body}) => {
-//                 console.log(body);
-//             })
-//         }
-//     })
-// })
+describe('PATCH /api/articles/:article_id', () => {
+    it('returns status 200 and the article and updates the votes number', () => {
+        for (let i = 0; i < articles.length; i++) {
+            const endpoint = `/api/articles/${i + 1}`
+            const previousVotes = articles[i].votes
+            return request(app)
+            .patch(endpoint)
+            .send({ inc_vote: 1 })
+            .expect(200)
+            .then(({body}) => {
+                console.log(previousVotes, body.updatedArticle.votes);
+            })
+        }
+    })
+})
