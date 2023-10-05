@@ -18,3 +18,7 @@ exports.getArticles = async (req, res, next) => {
         next(err)
     }
 }
+
+// exports.patchVotesByArticleId = async (req, res, next) => {
+
+// }
