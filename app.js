@@ -1,13 +1,13 @@
 const express = require("express");
 const app = express();
-const { getTopics } = require("../controllers/topics_controller");
-const { getEndpoints } = require("../controllers/endpoints_controller");
-const { getArticleById , getArticles, patchVotesbyArticleId} = require("../controllers/articles_controller")
+const { getTopics } = require("./controllers/topics_controller");
+const { getEndpoints } = require("./controllers/endpoints_controller");
+const { getArticleById , getArticles, patchVotesbyArticleId} = require("./controllers/articles_controller")
 const {
   handleCustomErrors,
   handlePsqlErrors,
   handleServerErrors,
-} = require('./errors/index.js');
+} = require('./db/errors/index.js');
 
 app.use(express.json())
 
