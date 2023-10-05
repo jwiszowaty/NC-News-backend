@@ -39,9 +39,8 @@ describe('GET /api', () => {
         .get('/api')
         .expect(200)
             .then(({ body }) => {
-            expect(Object.keys(body.endpoints)).toHaveLength(4)
-            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id', 'GET /api/articles/:article_id/comments' ])
-            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id', "GET /api/articles"])
+            expect(Object.keys(body.endpoints)).toHaveLength(5)
+            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id','GET /api/articles', 'GET /api/articles/:article_id/comments' ])
         })
     })
 })
