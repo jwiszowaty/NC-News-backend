@@ -4,7 +4,7 @@ const request = require('supertest')
 const app = require('../db/app')
 const db = require("../db/connection")
 const { expect } = require('@jest/globals')
-const { log } = require('console')
+
 
 beforeEach(() => {
     return seed(data)
@@ -125,7 +125,7 @@ describe('GET /api/articles/:article_id/comments', () => {
         .get('/api/articles/2/comments')
         .expect(200)
         .then(({body}) => {
-            expect(body.msg).toBe('No comments found for this article');
+            expect(body.comments).toEqual([]);
         })
     })
     it('return status 404 when article_id does not exist', () => {
