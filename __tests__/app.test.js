@@ -4,6 +4,7 @@ const request = require('supertest')
 const app = require('../db/app')
 const db = require("../db/connection")
 const { expect } = require('@jest/globals')
+const { log } = require('console')
 
 beforeEach(() => {
     return seed(data)
@@ -81,36 +82,6 @@ describe('GET /api/articles/:article_id', () => {
         })
     })
 })
-describe('GET /api/articles/:article_id/comments', () => {
-    it('return status 200 and an array of comments for the given article_id', () => {
-        return request(app)
-        .get('/api/articles/1/comments')
-        .expect(200)
-        .then(({body}) => {
-            const expectedKeys = ["comment_id", "votes", "created_at", "author", "body", "article_id"]
-            expect(body.comments).toBeSortedBy("created_at", { descending: true })
-            body.comments.forEach((comment) => {
-                expect(Object.keys(comment)).toEqual(expect.arrayContaining(expectedKeys))
-            })
-        })
-    })
-    it('return status 404 when article_id does not exist', () => {
-        return request(app)
-        .get('/api/articles/9999/comments')
-        .expect(404)
-        .then(({body}) => {
-            expect(body.msg).toBe("No comments found for this article")
-        })
-    })
-    it('return status 400 when passed article_id is not integer', () => {
-        return request(app)
-        .get('/api/articles/not-an-id/comments')
-        .expect(400)
-        .then(({body}) => {
-            expect(body.msg).toBe("Invalid input")
-        })
-    })
-})
 describe('GET /api/articles', () => {
     it('returns status 200 and list of all articles in test DB in descending order', () => {
         return request(app)
@@ -134,5 +105,43 @@ describe('GET /api/articles', () => {
                     expect(article).toMatchObject(articleExample)
                 })
             })
+    })
+})
+describe('GET /api/articles/:article_id/comments', () => {
+    it('return status 200 and an array of comments for the given article_id', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({body}) => {
+            const expectedKeys = ["comment_id", "votes", "created_at", "author", "body", "article_id"]
+            expect(body.comments).toBeSortedBy("created_at", { descending: true })
+            body.comments.forEach((comment) => {
+                expect(Object.keys(comment)).toEqual(expect.arrayContaining(expectedKeys))
+            })
+        })
+    })
+    it('return status 200 even when there are no comments for an existing article', () => {
+        return request(app)
+        .get('/api/articles/2/comments')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.msg).toBe('No comments found for this article');
+        })
+    })
+    it('return status 404 when article_id does not exist', () => {
+        return request(app)
+        .get('/api/articles/9999/comments')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("Article not found")
+        })
+    })
+    it('return status 400 when passed article_id is not integer', () => {
+        return request(app)
+        .get('/api/articles/not-an-id/comments')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid input")
+        })
     })
 })
