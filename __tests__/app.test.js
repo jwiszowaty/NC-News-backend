@@ -88,6 +88,17 @@ describe('GET /api/articles', () => {
             .expect(200)
             .then(({ body }) => {
                 const articleKeys = ['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'article_img_url', 'comment_count']
+                const articleExample = {
+                    author: 'icellusedkars',
+                title: 'Z',
+                article_id: 7,
+                topic: 'mitch',
+                created_at: '2020-01-07T14:08:00.000Z',
+                votes: 0,
+                article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+                comment_count: '0'
+                }
+                expect(body.articles).toHaveLength(13)
                 expect(body.articles).toBeSortedBy('created_at', { descending: true })
                 body.articles.forEach((article) => {
                     expect(Object.keys(article)).toEqual(expect.not.arrayContaining(['body']))
