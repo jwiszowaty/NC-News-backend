@@ -106,6 +106,6 @@ describe('GET /api/articles', () => {
             })
     })
 })
-describe('PATCH /api/articles/:article_id', () => {
-    it('returns status 20')
-})
+// describe('PATCH /api/articles/:article_id', () => {
+//     it('returns status 20')
+// })
