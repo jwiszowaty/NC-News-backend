@@ -87,22 +87,21 @@ describe('GET /api/articles', () => {
             .get('/api/articles')
             .expect(200)
             .then(({ body }) => {
-                const articleKeys = ['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'article_img_url', 'comment_count']
                 const articleExample = {
-                    author: 'icellusedkars',
-                title: 'Z',
-                article_id: 7,
-                topic: 'mitch',
-                created_at: '2020-01-07T14:08:00.000Z',
-                votes: 0,
-                article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-                comment_count: '0'
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(String)
                 }
                 expect(body.articles).toHaveLength(13)
                 expect(body.articles).toBeSortedBy('created_at', { descending: true })
                 body.articles.forEach((article) => {
-                    expect(Object.keys(article)).toEqual(expect.not.arrayContaining(['body']))
-                    expect(Object.keys(article)).toEqual(expect.arrayContaining(articleKeys))
+                    expect(article).not.toHaveProperty('body')
+                    expect(article).toMatchObject(articleExample)
                 })
             })
     })
