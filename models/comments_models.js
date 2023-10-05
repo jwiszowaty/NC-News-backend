@@ -7,10 +7,6 @@ exports.selectCommentsByArticleId = async (article_id) => {
         WHERE article_id = $1
         ORDER BY created_at DESC`,
         [article_id]
-    );
-    if (article_id < 1 || article_id >= articles.length) {
-        return Promise.reject({ status: 404, msg: 'Article not found' })
-    } else {
-        return result.rows
-    }
+    )
+    return result.rows
 }

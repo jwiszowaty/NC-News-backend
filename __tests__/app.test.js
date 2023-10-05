@@ -4,6 +4,7 @@ const request = require('supertest')
 const app = require('../db/app')
 const db = require("../db/connection")
 const { expect } = require('@jest/globals')
+const { log } = require('console')
 
 
 beforeEach(() => {
@@ -133,7 +134,7 @@ describe('GET /api/articles/:article_id/comments', () => {
         .get('/api/articles/9999/comments')
         .expect(404)
         .then(({body}) => {
-            expect(body.msg).toBe("Article not found")
+            expect(body.msg).toBe("No articles found")
         })
     })
     it('return status 400 when passed article_id is not integer', () => {
