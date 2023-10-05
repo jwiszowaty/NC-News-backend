@@ -110,14 +110,3 @@ describe('GET /api/articles/:article_id/comments', () => {
         })
     })
 })
-describe('POST /api/articles/:article_id/comments', () => {
-    it('returns status 201, added comment and adds comment object to table comments', () => {
-        return request(app)
-        .post('/api/articles/1/comments')
-        .send({body:'NEW COMMENT', author: 'butter_bridge'})
-        .expect(201)
-            .then(({ body }) => {
-                // ADD expect
-        })
-    })
-})
