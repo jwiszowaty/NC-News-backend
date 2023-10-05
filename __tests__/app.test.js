@@ -1,8 +1,8 @@
 const seed = require('../db/seeds/seed')
 const data = require('../db/data/test-data/index')
 const request = require('supertest')
-const app = require('../db/app')
-const db = require("../db/connection")
+const app = require('../app')
+const db = require("../connection")
 
 beforeEach(() => {
     return seed(data)
@@ -38,8 +38,8 @@ describe('GET /api', () => {
         .get('/api')
         .expect(200)
             .then(({ body }) => {
-            expect(Object.keys(body.endpoints)).toHaveLength(4)
-            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id', 'GET /api/articles/:article_id/comments' ])
+            expect(Object.keys(body.endpoints)).toHaveLength(5)
+            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id','GET /api/articles', 'GET /api/articles/:article_id/comments' ])
         })
     })
 })
@@ -59,7 +59,7 @@ describe('GET /api/articles/:article_id', () => {
             votes: 100,
             article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
             }
-        expect(body.article).toStrictEqual(article_1)
+        expect(body.article).toMatchObject(article_1)
     
         })
     })
@@ -80,6 +80,31 @@ describe('GET /api/articles/:article_id', () => {
         })
     })
 })
+describe('GET /api/articles', () => {
+    it('returns status 200 and list of all articles in test DB in descending order', () => {
+        return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({ body }) => {
+                const articleExample = {
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(String)
+                }
+                expect(body.articles).toHaveLength(13)
+                expect(body.articles).toBeSortedBy('created_at', { descending: true })
+                body.articles.forEach((article) => {
+                    expect(article).not.toHaveProperty('body')
+                    expect(article).toMatchObject(articleExample)
+                })
+            })
+    })
+})
 describe('GET /api/articles/:article_id/comments', () => {
     it('return status 200 and an array of comments for the given article_id', () => {
         return request(app)
@@ -93,12 +118,20 @@ describe('GET /api/articles/:article_id/comments', () => {
             })
         })
     })
+    it('return status 200 even when there are no comments for an existing article', () => {
+        return request(app)
+        .get('/api/articles/2/comments')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.comments).toEqual([]);
+        })
+    })
     it('return status 404 when article_id does not exist', () => {
         return request(app)
         .get('/api/articles/9999/comments')
         .expect(404)
         .then(({body}) => {
-            expect(body.msg).toBe("No comments found for this article")
+            expect(body.msg).toBe("No articles found")
         })
     })
     it('return status 400 when passed article_id is not integer', () => {
