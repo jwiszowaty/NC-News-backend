@@ -18,10 +18,5 @@ exports.insertComment = async (body, author, article_id) => {
         RETURNING *;`,
         [body, author, article_id]
     )
-    if (result.rows.length === 0) {
-        return Promise.reject({ status: 400, msg: 'Bad request: comment posting failed' })
-    }
-    else {
-        return result.rows[0]
-    }
+    return result.rows[0]
 }
