@@ -27,7 +27,7 @@ describe('GET /api/topics', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
-            .then(({ body }) => {
+        .then(({ body }) => {
             expect(body.topics).toHaveLength(3)
         })
     })
@@ -59,12 +59,12 @@ describe('GET /api/articles/:article_id', () => {
             expect(body.msg).toBe("Article not found")
         })
     })
-it('returns status 400 when article_id is not an integer', () => {
-    return request(app)
-    .get('/api/articles/not-an-id')
-    .expect(400)
-    .then(({body}) => {
-        expect(body.msg).toBe("Invalid input")
+    it('returns status 400 when article_id is not an integer', () => {
+        return request(app)
+        .get('/api/articles/not-an-id')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid input")
         })
     })
 })
@@ -90,9 +90,9 @@ describe('GET /api/articles', () => {
                 expect(article).not.toHaveProperty('body')
                 expect(article).toMatchObject(articleExample)
             })
-            })
         })
     })
+})
 describe('GET /api/articles/:article_id/comments', () => {
     it('return status 200 and an array of comments for the given article_id', () => {
         return request(app)
@@ -203,24 +203,6 @@ describe('POST /api/articles/:article_id/comments', () => {
         })
     })
 })
-describe('GET /api', () => {
-    it('return status 200 and the list of endpoints available', () => {
-        request(app)
-        .get('/api')
-        .expect(200)
-        .then(({ body }) => {
-            const endpoints = {
-                "GET /api": expect.any(Object),
-                "GET /api/topics": expect.any(Object),
-                "GET /api/articles/:article_id" : expect.any(Object),
-                "GET /api/articles" : expect.any(Object),
-                "GET /api/articles/:article_id/comments" : expect.any(Object),
-                "POST /api/articles/:article_id/comments" : expect.any(Object)
-            }
-            expect(body.endpoints).toEqual(expect.objectContaining(endpoints))
-        })
-    })
-})
 describe('PATCH /api/articles/:article_id', () => {
     it('returns status 200 and the article and updates the votes number', () => {
         return request(app)
@@ -274,6 +256,50 @@ describe('PATCH /api/articles/:article_id', () => {
         .expect(400)
         .then(({body}) => {
             expect(body.msg).toBe('Invalid input')
+        })
+    })
+})
+describe('DELETE /api/comments/:comment_id', () => {
+    it('returns status 204, deletes a specific comment by its id and returns no content', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+        .then(({body}) => {
+           expect(body).toEqual({})
+        })
+    })
+    it('returns status 404 when comment does not exist', () => {
+        return request(app)
+        .delete('/api/comments/99999')
+        .expect(404)
+        .then(({body}) => {
+           expect(body.msg).toEqual('Comment not found')
+        })
+    })
+    it('returns status 400 when comment_id is not an integer', () => {
+        return request(app)
+        .delete('/api/comments/not-an-id')
+        .expect(400)
+        .then(({body}) => {
+           expect(body.msg).toEqual('Invalid input')
+        })
+    })
+})
+describe('GET /api', () => {
+    it('return status 200 and the list of endpoints available', () => {
+        request(app)
+        .get('/api')
+        .expect(200)
+        .then(({ body }) => {
+            const endpoints = {
+                "GET /api": expect.any(Object),
+                "GET /api/topics": expect.any(Object),
+                "GET /api/articles/:article_id" : expect.any(Object),
+                "GET /api/articles" : expect.any(Object),
+                "GET /api/articles/:article_id/comments" : expect.any(Object),
+                "POST /api/articles/:article_id/comments" : expect.any(Object)
+            }
+            expect(body.endpoints).toEqual(expect.objectContaining(endpoints))
         })
     })
 })
