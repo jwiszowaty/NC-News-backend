@@ -21,7 +21,6 @@ app.get('/api/articles', getArticles)
 app.all("/*", (req, res) => {
   res.status(404).send({message: 'No such path...\n...yet'})
 })
-
 app.use(handleCustomErrors)
 app.use(handlePsqlErrors)
 app.use(handleServerErrors)
