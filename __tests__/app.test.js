@@ -12,7 +12,7 @@ afterAll(() => {
     db.end()
 })
 
-describe('errors - 404', () => {
+describe('WRONG ROUTE - 404', () => {
     it('404 when route does not exist', () => {
         return request(app)
         .get('/api/notAValidPath')
@@ -48,7 +48,7 @@ describe('GET /api/articles/:article_id', () => {
                 votes: 100,
                 article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
             }
-        expect(body.article).toMatchObject(article_1)
+            expect(body.article).toMatchObject(article_1)
         })
     })
     it("returns status 404 when id does not correspond to an existing article_id", () => {
@@ -285,6 +285,23 @@ describe('DELETE /api/comments/:comment_id', () => {
         })
     })
 })
+describe('GET /api/users', () => {
+    it('returns status 200 and array of user objects with the follwoing keys: username, name, avatar_url', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then(({body}) => {
+            const userExample = {
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String)
+            }
+            body.users.forEach((user) => {
+                expect((user)).toEqual(expect.objectContaining(userExample))
+            })
+        })
+    })
+}) 
 describe('GET /api', () => {
     it('return status 200 and the list of endpoints available', () => {
         request(app)
@@ -297,7 +314,8 @@ describe('GET /api', () => {
                 "GET /api/articles/:article_id" : expect.any(Object),
                 "GET /api/articles" : expect.any(Object),
                 "GET /api/articles/:article_id/comments" : expect.any(Object),
-                "POST /api/articles/:article_id/comments" : expect.any(Object)
+                "POST /api/articles/:article_id/comments": expect.any(Object),
+                'GET /api/users': expect.any(Object)
             }
             expect(body.endpoints).toEqual(expect.objectContaining(endpoints))
         })

@@ -1,6 +1,6 @@
 const { selectCommentsByArticleId, selectCommentById, deleteCommentById, insertComment } = require("../models/comments_models")
 const { selectArticleById} = require("../models/articles_model")
-const { selectUser } = require("../models/users_models")
+const { selectUser } = require("../models/users_model")
 
 exports.getCommentsByArticleId = async (req, res, next) => {
     try {
