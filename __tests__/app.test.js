@@ -59,12 +59,12 @@ describe('GET /api/articles/:article_id', () => {
             expect(body.msg).toBe("Article not found")
         })
     })
-    it('returns status 400 when article_id is not an integer', () => {
-        return request(app)
-        .get('/api/articles/not-an-id')
-        .expect(400)
-        .then(({body}) => {
-            expect(body.msg).toBe("Invalid input")
+it('returns status 400 when article_id is not an integer', () => {
+    return request(app)
+    .get('/api/articles/not-an-id')
+    .expect(400)
+    .then(({body}) => {
+        expect(body.msg).toBe("Invalid input")
         })
     })
 })
@@ -218,6 +218,62 @@ describe('GET /api', () => {
                 "POST /api/articles/:article_id/comments" : expect.any(Object)
             }
             expect(body.endpoints).toEqual(expect.objectContaining(endpoints))
+        })
+    })
+})
+describe('PATCH /api/articles/:article_id', () => {
+    it('returns status 200 and the article and updates the votes number', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_vote: 1 })
+        .expect(200)
+            .then(({ body }) => {
+            expect(body.updatedArticle.votes).toBe(101)
+        })
+    })
+    it('returns status 200 and body contain extra/unnecessary keys', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_vote: 1, extra: "extra" })
+        .expect(200)
+            .then(({ body }) => {
+            expect(body.updatedArticle.votes).toBe(101)
+        })
+    })
+    it("returns status 404 when id does not correspond to an existing article_id", () => {
+        return request(app)
+        .get('/api/articles/9999')
+        .send({ inc_vote: 1 })
+        .expect(404)
+            .then(({ body }) => {
+            expect(body.msg).toBe("Article not found")
+        })
+    })
+    it("returns status 404 when article_id is not an integer", () => {
+        return request(app)
+        .get('/api/articles/not-an-id')
+        .send({ inc_vote: 1 })
+        .expect(400)
+            .then(({ body }) => {
+            expect(body.msg).toBe("Invalid input")
+        })
+    })
+    it('returns status 400 when the body has missing incomplete/missing data', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Failing row contains')
+        })
+    })
+    it('returns status 400 when inc_vote is not an integer', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_vote: 'not-a-number' })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Invalid input')
         })
     })
 })
