@@ -21,7 +21,6 @@ exports.getArticles = async (req, res, next) => {
 
 exports.patchVotesbyArticleId = async (req, res, next) => {
     try {
-        console.log(req);
         const { article_id } = req.params
         const { inc_vote } = req.body
         await selectArticleById(article_id)

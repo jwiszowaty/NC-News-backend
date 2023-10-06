@@ -7,7 +7,7 @@ const {
   handleCustomErrors,
   handlePsqlErrors,
   handleServerErrors,
-} = require('./db/errors/index.js');
+} = require('./errors/index.js');
 
 app.use(express.json())
 

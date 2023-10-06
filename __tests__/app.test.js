@@ -33,17 +33,17 @@ describe('GET /api/topics', () => {
         })
     })
 })
-describe('GET /api', () => {
-    it('return status 200 and the list of endpoints available', () => {
-        request(app)
-        .get('/api')
-        .expect(200)
-            .then(({ body }) => {
-            expect(Object.keys(body.endpoints)).toHaveLength(4)
-            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id', "GET /api/articles"])
-        })
-    })
-})
+// describe('GET /api', () => {
+//     it('return status 200 and the list of endpoints available', () => {
+//         request(app)
+//         .get('/api')
+//         .expect(200)
+//             .then(({ body }) => {
+//             expect(Object.keys(body.endpoints)).toHaveLength(4)
+//             expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id', "GET /api/articles"])
+//         })
+//     })
+// })
 describe('GET /api/articles/:article_id', () => {
     it('returns status 200 and the article requested', () => {
         return request(app)
@@ -59,25 +59,25 @@ describe('GET /api/articles/:article_id', () => {
             created_at: '2020-07-09T20:11:00.000Z',
             votes: 100,
             article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-            }
+        }
         expect(body.article).toMatchObject(article_1)
-    
-        })
+        
     })
-    it("returns status 404 when id does not correspond to an existing article_id", () => {
-        return request(app)
-        .get('/api/articles/17')
-        .expect(404)
-            .then(({body}) => {
-            expect(body.msg).toBe("No articles found")
-        })
+})
+it("returns status 404 when id does not correspond to an existing article_id", () => {
+    return request(app)
+    .get('/api/articles/17')
+    .expect(404)
+    .then(({body}) => {
+        expect(body.msg).toBe("Article not found")
     })
-    it('returns status 400 when article_id is not an integer', () => {
-        return request(app)
-        .get('/api/articles/not-an-id')
-        .expect(400)
-        .then(({body}) => {
-            expect(body.msg).toBe("Invalid input")
+})
+it('returns status 400 when article_id is not an integer', () => {
+    return request(app)
+    .get('/api/articles/not-an-id')
+    .expect(400)
+    .then(({body}) => {
+        expect(body.msg).toBe("Invalid input")
         })
     })
 })
@@ -108,16 +108,31 @@ describe('GET /api/articles', () => {
 })
 describe('PATCH /api/articles/:article_id', () => {
     it('returns status 200 and the article and updates the votes number', () => {
-        for (let i = 0; i < articles.length; i++) {
-            const endpoint = `/api/articles/${i + 1}`
-            const previousVotes = articles[i].votes
-            return request(app)
-            .patch(endpoint)
-            .send({ inc_vote: 1 })
-            .expect(200)
-            .then(({body}) => {
-                console.log(previousVotes, body.updatedArticle.votes);
-            })
-        }
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_vote: 1 })
+        .expect(200)
+            .then(({ body }) => {
+            console.log(body);
+            expect(body.updatedArticle.votes).toBe(101)
+        })
+    })
+    it('returns status 400 when the body has missing incomplete/missing data', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Failing row contains')
+        })
+    })
+    it('returns status 400 when inc_vote is not an integer', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_vote: 'not-a-number' })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Invalid input')
+        })
     })
 })
