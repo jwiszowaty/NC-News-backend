@@ -313,11 +313,20 @@ describe('QUERY = topic GET /api/articles', () => {
             })
         })
     })
-    it('returns 404 when there are no articles associated with a topic', () => {
+    it('returns 404 when there are no articles associated with a topic not in DB', () => {
         return request(app)
         .get('/api/articles?topic=climate')
         .expect(404)
             .then(({body}) => {
+            expect(body.msg).toEqual('No articles found on this topic')
+        })
+    })
+    it('returns 404 when there are no articles associated with a topic exisiting in DB', () => {
+        return request(app)
+        .get('/api/articles?topic=paper')
+        .expect(404)
+            .then(({ body }) => {
+                console.log(body);
             expect(body.msg).toEqual('No articles found on this topic')
         })
     })

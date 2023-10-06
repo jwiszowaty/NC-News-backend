@@ -20,12 +20,18 @@ exports.selectAllArticles = async (topic) => {
     if (topic) {
         queryStr += ` WHERE topic = $1 GROUP BY articles.article_id ORDER BY articles.created_at DESC;`
         result = await db.query(queryStr, [topic])
+        if (result.rows.length === 0) {
+            return Promise.reject({status: 404, msg: 'No articles found on this topic'})
+        } else {
+            return result.rows
+        }
     } else {
         queryStr += ` GROUP BY articles.article_id ORDER BY articles.created_at DESC;`
         result = await db.query(queryStr)
+        return result.rows
     }
     
-    return result.rows
+    
 }
 
 exports.updateVotesByArticleId = async (article_id, inc_vote) => {
