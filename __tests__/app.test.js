@@ -203,24 +203,6 @@ describe('POST /api/articles/:article_id/comments', () => {
         })
     })
 })
-describe('GET /api', () => {
-    it('return status 200 and the list of endpoints available', () => {
-        request(app)
-        .get('/api')
-        .expect(200)
-        .then(({ body }) => {
-            const endpoints = {
-                "GET /api": expect.any(Object),
-                "GET /api/topics": expect.any(Object),
-                "GET /api/articles/:article_id" : expect.any(Object),
-                "GET /api/articles" : expect.any(Object),
-                "GET /api/articles/:article_id/comments" : expect.any(Object),
-                "POST /api/articles/:article_id/comments" : expect.any(Object)
-            }
-            expect(body.endpoints).toEqual(expect.objectContaining(endpoints))
-        })
-    })
-})
 describe('PATCH /api/articles/:article_id', () => {
     it('returns status 200 and the article and updates the votes number', () => {
         return request(app)
@@ -274,6 +256,37 @@ describe('PATCH /api/articles/:article_id', () => {
         .expect(400)
         .then(({body}) => {
             expect(body.msg).toBe('Invalid input')
+        })
+    })
+})
+describe('QUERY = topic GET /api/articles', () => {
+    it('returns 200 and returns articles of specific topic', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch')
+        .expect(200)
+        .then(({body}) => {
+            body.articles.forEach((article) => {
+                expect(article).toEqual(expect.objectContaining({topic: "mitch"}))
+            })
+        })
+    })
+    
+})
+describe('GET /api', () => {
+    it('return status 200 and the list of endpoints available', () => {
+        request(app)
+        .get('/api')
+        .expect(200)
+        .then(({ body }) => {
+            const endpoints = {
+                "GET /api": expect.any(Object),
+                "GET /api/topics": expect.any(Object),
+                "GET /api/articles/:article_id" : expect.any(Object),
+                "GET /api/articles" : expect.any(Object),
+                "GET /api/articles/:article_id/comments" : expect.any(Object),
+                "POST /api/articles/:article_id/comments" : expect.any(Object)
+            }
+            expect(body.endpoints).toEqual(expect.objectContaining(endpoints))
         })
     })
 })
