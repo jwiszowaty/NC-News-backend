@@ -32,17 +32,6 @@ describe('GET /api/topics', () => {
         })
     })
 })
-describe('GET /api', () => {
-    it('return status 200 and the list of endpoints available', () => {
-        request(app)
-        .get('/api')
-        .expect(200)
-            .then(({ body }) => {
-            expect(Object.keys(body.endpoints)).toHaveLength(5)
-            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id','GET /api/articles', 'GET /api/articles/:article_id/comments' ])
-        })
-    })
-})
 describe('GET /api/articles/:article_id', () => {
     it('returns status 200 and the article requested', () => {
         return request(app)
@@ -50,25 +39,24 @@ describe('GET /api/articles/:article_id', () => {
         .expect(200)
         .then(({ body }) => {
             const article_1 = {
-            article_id: 1,
-            title: "Living in the shadow of a great man",
-            topic: "mitch",
-            author: "butter_bridge",
-            body: "I find this existence challenging",
-            created_at: '2020-07-09T20:11:00.000Z',
-            votes: 100,
-            article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: '2020-07-09T20:11:00.000Z',
+                votes: 100,
+                article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
             }
         expect(body.article).toMatchObject(article_1)
-    
         })
     })
     it("returns status 404 when id does not correspond to an existing article_id", () => {
         return request(app)
         .get('/api/articles/17')
         .expect(404)
-            .then(({body}) => {
-            expect(body.msg).toBe("No articles found")
+        .then(({body}) => {
+            expect(body.msg).toBe("Article not found")
         })
     })
     it('returns status 400 when article_id is not an integer', () => {
@@ -83,10 +71,10 @@ describe('GET /api/articles/:article_id', () => {
 describe('GET /api/articles', () => {
     it('returns status 200 and list of all articles in test DB in descending order', () => {
         return request(app)
-            .get('/api/articles')
-            .expect(200)
-            .then(({ body }) => {
-                const articleExample = {
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body }) => {
+            const articleExample = {
                 author: expect.any(String),
                 title: expect.any(String),
                 article_id: expect.any(Number),
@@ -95,16 +83,16 @@ describe('GET /api/articles', () => {
                 votes: expect.any(Number),
                 article_img_url: expect.any(String),
                 comment_count: expect.any(String)
-                }
-                expect(body.articles).toHaveLength(13)
-                expect(body.articles).toBeSortedBy('created_at', { descending: true })
-                body.articles.forEach((article) => {
-                    expect(article).not.toHaveProperty('body')
-                    expect(article).toMatchObject(articleExample)
-                })
+            }
+            expect(body.articles).toHaveLength(13)
+            expect(body.articles).toBeSortedBy('created_at', { descending: true })
+            body.articles.forEach((article) => {
+                expect(article).not.toHaveProperty('body')
+                expect(article).toMatchObject(articleExample)
             })
+            })
+        })
     })
-})
 describe('GET /api/articles/:article_id/comments', () => {
     it('return status 200 and an array of comments for the given article_id', () => {
         return request(app)
@@ -131,7 +119,7 @@ describe('GET /api/articles/:article_id/comments', () => {
         .get('/api/articles/9999/comments')
         .expect(404)
         .then(({body}) => {
-            expect(body.msg).toBe("No articles found")
+            expect(body.msg).toBe("Article not found")
         })
     })
     it('return status 400 when passed article_id is not integer', () => {
@@ -140,6 +128,96 @@ describe('GET /api/articles/:article_id/comments', () => {
         .expect(400)
         .then(({body}) => {
             expect(body.msg).toBe("Invalid input")
+        })
+    })
+})
+describe('POST /api/articles/:article_id/comments', () => {
+    it('returns status 201, added comment and adds comment object to table comments', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({body:'NEW COMMENT', author: 'butter_bridge'})
+        .expect(201)
+        .then(({ body }) => {
+            const newCommentObject = {
+                comment_id: 19,
+                body: 'NEW COMMENT',
+                article_id: 1,
+                author: 'butter_bridge',
+                votes: 0,
+                created_at: expect.any(String)
+            }
+            expect(body.comment).toMatchObject(newCommentObject)
+        })
+    })
+    it('returns status 400 when either body or author is missing', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({author: 'butter_bridge'})
+        .expect(400)
+        .then(({body}) => {
+           expect(body.msg).toBe('Failing row contains')
+        })
+    })
+    it('returns status 404 when author does not exist', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({body:'NEW COMMENT', author: 'brigitte'})
+        .expect(404)
+        .then(({body}) => {
+           expect(body.msg).toBe('User not found')
+        })
+    })
+    it('returns status 404 when article does not exist', () => {
+        return request(app)
+        .post('/api/articles/9999/comments')
+        .send({body:'NEW COMMENT', author: 'butter_bridge'})
+        .expect(404)
+        .then(({body}) => {
+           expect(body.msg).toBe('Article not found')
+        })
+    })
+    it('return status 400 when passed article_id is not integer', () => {
+        return request(app)
+        .post('/api/articles/not-an-id/comments')
+        .send({body:'NEW COMMENT', author: 'butter_bridge'})
+        .expect(400)
+        .then(({body}) => {
+           expect(body.msg).toBe('Invalid input')
+        })
+    })
+    it('return status 201 when body contains extra/unnecessary keys', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({body:'NEW COMMENT', extra:"extra", author: 'butter_bridge'})
+        .expect(201)
+        .then(({ body }) => {
+            const newCommentObject = {
+                comment_id: 19,
+                body: 'NEW COMMENT',
+                article_id: 1,
+                author: 'butter_bridge',
+                votes: 0,
+                created_at: expect.any(String)
+            }
+            expect(body.comment).toMatchObject(newCommentObject)
+        })
+    })
+})
+describe('GET /api', () => {
+    it('return status 200 and the list of endpoints available', () => {
+        request(app)
+        .get('/api')
+        .expect(200)
+        .then(({ body }) => {
+            const endpoints = {
+                "GET /api": expect.any(Object),
+                "GET /api/topics": expect.any(Object),
+                "GET /api/articles/:article_id" : expect.any(Object),
+                "GET /api/articles" : expect.any(Object),
+                "GET /api/articles/:article_id/comments" : expect.any(Object),
+                "POST /api/articles/:article_id/comments" : expect.any(Object)
+            }
+            expect(body.endpoints).toEqual(expect.objectContaining(endpoints))
         })
     })
 })
