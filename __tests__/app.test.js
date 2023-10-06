@@ -56,7 +56,7 @@ describe('GET /api/articles/:article_id', () => {
         .get('/api/articles/17')
         .expect(404)
         .then(({body}) => {
-            expect(body.msg).toBe("No articles found")
+            expect(body.msg).toBe("Article not found")
         })
     })
     it('returns status 400 when article_id is not an integer', () => {
@@ -119,7 +119,7 @@ describe('GET /api/articles/:article_id/comments', () => {
         .get('/api/articles/9999/comments')
         .expect(404)
         .then(({body}) => {
-            expect(body.msg).toBe("No articles found")
+            expect(body.msg).toBe("Article not found")
         })
     })
     it('return status 400 when passed article_id is not integer', () => {
@@ -149,13 +149,57 @@ describe('POST /api/articles/:article_id/comments', () => {
             expect(body.comment).toMatchObject(newCommentObject)
         })
     })
-    it('returns status 400, when either body or author is missing', () => {
+    it('returns status 400 when either body or author is missing', () => {
         return request(app)
         .post('/api/articles/1/comments')
         .send({author: 'butter_bridge'})
         .expect(400)
         .then(({body}) => {
            expect(body.msg).toBe('Failing row contains')
+        })
+    })
+    it('returns status 404 when author does not exist', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({body:'NEW COMMENT', author: 'brigitte'})
+        .expect(404)
+        .then(({body}) => {
+           expect(body.msg).toBe('User not found')
+        })
+    })
+    it('returns status 404 when article does not exist', () => {
+        return request(app)
+        .post('/api/articles/9999/comments')
+        .send({body:'NEW COMMENT', author: 'butter_bridge'})
+        .expect(404)
+        .then(({body}) => {
+           expect(body.msg).toBe('Article not found')
+        })
+    })
+    it('return status 400 when passed article_id is not integer', () => {
+        return request(app)
+        .post('/api/articles/not-an-id/comments')
+        .send({body:'NEW COMMENT', author: 'butter_bridge'})
+        .expect(400)
+        .then(({body}) => {
+           expect(body.msg).toBe('Invalid input')
+        })
+    })
+    it('return status 201 when body contains extra/unnecessary keys', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({body:'NEW COMMENT', extra:"extra", author: 'butter_bridge'})
+        .expect(201)
+        .then(({ body }) => {
+            const newCommentObject = {
+                comment_id: 19,
+                body: 'NEW COMMENT',
+                article_id: 1,
+                author: 'butter_bridge',
+                votes: 0,
+                created_at: expect.any(String)
+            }
+            expect(body.comment).toMatchObject(newCommentObject)
         })
     })
 })
