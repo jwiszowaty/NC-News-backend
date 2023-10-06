@@ -302,6 +302,35 @@ describe('GET /api/users', () => {
         })
     })
 }) 
+describe('QUERY = topic GET /api/articles', () => {
+    it('returns 200 and returns articles of specific topic', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch')
+        .expect(200)
+        .then(({body}) => {
+            body.articles.forEach((article) => {
+                expect(article).toEqual(expect.objectContaining({topic: "mitch"}))
+            })
+        })
+    })
+    it('returns 404 when there are no articles associated with a topic not in DB', () => {
+        return request(app)
+        .get('/api/articles?topic=climate')
+        .expect(404)
+            .then(({body}) => {
+            expect(body.msg).toEqual('No articles found on this topic')
+        })
+    })
+    it('returns 404 when there are no articles associated with a topic exisiting in DB', () => {
+        return request(app)
+        .get('/api/articles?topic=paper')
+        .expect(404)
+            .then(({ body }) => {
+                console.log(body);
+            expect(body.msg).toEqual('No articles found on this topic')
+        })
+    })
+})
 describe('GET /api', () => {
     it('return status 200 and the list of endpoints available', () => {
         request(app)
