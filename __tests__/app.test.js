@@ -301,7 +301,18 @@ describe('GET /api/users', () => {
             })
         })
     })
-}) 
+})
+describe('QUERY = comment_count GET /api/articles/:article_id', () => {
+    it('returns 200 and article object with comment_count for the article', () => {
+        return request(app)
+        .get('/api/articles/1?comment_count=true')
+        .expect(200)
+        .then(({body}) => {
+            console.log(body);
+            expect(body.article).toEqual(expect.objectContaining({comment_count: expect.any(String)}))
+        })
+    })
+})
 describe('GET /api', () => {
     it('return status 200 and the list of endpoints available', () => {
         request(app)

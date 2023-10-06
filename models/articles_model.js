@@ -1,7 +1,21 @@
 const db = require("../connection")
 
-exports.selectArticleById = async (article_id) => {
-    const result = await db.query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+exports.selectArticleById = async (article_id, comment_count) => {
+    let result;
+    if (comment_count) {
+        result = await db.query(
+            `SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles
+            LEFT JOIN comments
+            ON articles.article_id = comments.article_id
+            WHERE articles.article_id = $1
+            GROUP BY articles.article_id;`,
+            [article_id]
+        )
+    }
+    else {
+        result = await db.query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+    }
+
     if (result.rows.length === 0) {
         return Promise.reject({status: 404, msg: 'Article not found'})
     }
