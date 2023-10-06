@@ -296,7 +296,7 @@ describe('GET /api/users', () => {
                 name: expect.any(String),
                 avatar_url: expect.any(String)
             }
-            body.users.map((user) => {
+            body.users.forEach((user) => {
                 expect((user)).toEqual(expect.objectContaining(userExample))
             })
         })
