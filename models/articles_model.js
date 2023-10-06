@@ -24,21 +24,28 @@ exports.selectArticleById = async (article_id, comment_count) => {
     }
 }
 
-exports.selectAllArticles = async () => {
-    const result = await db
-    .query(
-        `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.article_id) AS comment_count FROM articles
-        LEFT JOIN comments
-        ON comments.article_id = articles.article_id
-        GROUP BY articles.article_id
-        ORDER BY articles.created_at DESC`
-    )
-    if (result.rows.length === 0) {
-        return Promise.reject({status: 404, msg: 'No articles found'})
-    }
-    else {
+exports.selectAllArticles = async (topic) => {
+    let result;
+
+    let queryStr = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.article_id) AS comment_count FROM articles
+    LEFT JOIN comments
+    ON comments.article_id = articles.article_id`
+    
+    if (topic) {
+        queryStr += ` WHERE topic = $1 GROUP BY articles.article_id ORDER BY articles.created_at DESC;`
+        result = await db.query(queryStr, [topic])
+        if (result.rows.length === 0) {
+            return Promise.reject({status: 404, msg: 'No articles found on this topic'})
+        } else {
+            return result.rows
+        }
+    } else {
+        queryStr += ` GROUP BY articles.article_id ORDER BY articles.created_at DESC;`
+        result = await db.query(queryStr)
         return result.rows
     }
+    
+    
 }
 
 exports.updateVotesByArticleId = async (article_id, inc_vote) => {
