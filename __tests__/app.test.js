@@ -143,3 +143,29 @@ describe('GET /api/articles/:article_id/comments', () => {
         })
     })
 })
+describe('DELETE /api/comments/:comment_id', () => {
+    it('returns status 204, deletes a specific comment by its id and returns no content', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+        .then(({body}) => {
+           expect(body).toEqual({})
+        })
+    })
+    it('returns status 404 when comment does not exist', () => {
+        return request(app)
+        .delete('/api/comments/99999')
+        .expect(404)
+        .then(({body}) => {
+           expect(body.msg).toEqual('Comment not found')
+        })
+    })
+    it('returns status 400 when comment_id is not an integer', () => {
+        return request(app)
+        .delete('/api/comments/not-an-id')
+        .expect(400)
+        .then(({body}) => {
+           expect(body.msg).toEqual('Invalid input')
+        })
+    })
+})
