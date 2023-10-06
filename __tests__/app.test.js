@@ -270,7 +270,14 @@ describe('QUERY = topic GET /api/articles', () => {
             })
         })
     })
-    
+    it('returns 404 when there are no articles associated with a topic', () => {
+        return request(app)
+        .get('/api/articles?topic=climate')
+        .expect(404)
+            .then(({body}) => {
+            expect(body.msg).toEqual('No articles found on this topic')
+        })
+    })
 })
 describe('GET /api', () => {
     it('return status 200 and the list of endpoints available', () => {

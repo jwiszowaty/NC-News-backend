@@ -25,12 +25,7 @@ exports.selectAllArticles = async (topic) => {
         result = await db.query(queryStr)
     }
     
-    if (result.rows.length === 0) {
-        return Promise.reject({status: 404, msg: 'No articles found'})
-    }
-    else {
-        return result.rows
-    }
+    return result.rows
 }
 
 exports.updateVotesByArticleId = async (article_id, inc_vote) => {
