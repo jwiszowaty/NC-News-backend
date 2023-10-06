@@ -32,17 +32,6 @@ describe('GET /api/topics', () => {
         })
     })
 })
-describe('GET /api', () => {
-    it('return status 200 and the list of endpoints available', () => {
-        request(app)
-        .get('/api')
-        .expect(200)
-            .then(({ body }) => {
-            expect(Object.keys(body.endpoints)).toHaveLength(5)
-            expect(Object.keys(body.endpoints)).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles/:article_id','GET /api/articles', 'GET /api/articles/:article_id/comments' ])
-        })
-    })
-})
 describe('GET /api/articles/:article_id', () => {
     it('returns status 200 and the article requested', () => {
         return request(app)
@@ -166,6 +155,24 @@ describe('DELETE /api/comments/:comment_id', () => {
         .expect(400)
         .then(({body}) => {
            expect(body.msg).toEqual('Invalid input')
+        })
+    })
+})
+describe('GET /api', () => {
+    it('return status 200 and the list of endpoints available', () => {
+        request(app)
+        .get('/api')
+        .expect(200)
+            .then(({ body }) => {
+                const endpoints = {
+                    "GET /api": expect.any(Object),
+                    "GET /api/topics": expect.any(Object),
+                    "GET /api/articles/:article_id" : expect.any(Object),
+                    "GET /api/articles" : expect.any(Object),
+                    "GET /api/articles/:article_id/comments" : expect.any(Object),
+                    "DELETE /api/comments/:comment_id": expect.any(Object)
+                }
+            expect(body.endpoints).toEqual(expect.objectContaining(endpoints))
         })
     })
 })
