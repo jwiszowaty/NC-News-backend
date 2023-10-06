@@ -12,7 +12,7 @@ afterAll(() => {
     db.end()
 })
 
-describe('errors - 404', () => {
+describe('WRONG ROUTE - 404', () => {
     it('404 when route does not exist', () => {
         return request(app)
         .get('/api/notAValidPath')
@@ -27,7 +27,7 @@ describe('GET /api/topics', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
-            .then(({ body }) => {
+        .then(({ body }) => {
             expect(body.topics).toHaveLength(3)
         })
     })
@@ -48,7 +48,7 @@ describe('GET /api/articles/:article_id', () => {
                 votes: 100,
                 article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
             }
-        expect(body.article).toMatchObject(article_1)
+            expect(body.article).toMatchObject(article_1)
         })
     })
     it("returns status 404 when id does not correspond to an existing article_id", () => {
@@ -59,12 +59,12 @@ describe('GET /api/articles/:article_id', () => {
             expect(body.msg).toBe("Article not found")
         })
     })
-it('returns status 400 when article_id is not an integer', () => {
-    return request(app)
-    .get('/api/articles/not-an-id')
-    .expect(400)
-    .then(({body}) => {
-        expect(body.msg).toBe("Invalid input")
+    it('returns status 400 when article_id is not an integer', () => {
+        return request(app)
+        .get('/api/articles/not-an-id')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid input")
         })
     })
 })
@@ -90,9 +90,9 @@ describe('GET /api/articles', () => {
                 expect(article).not.toHaveProperty('body')
                 expect(article).toMatchObject(articleExample)
             })
-            })
         })
     })
+})
 describe('GET /api/articles/:article_id/comments', () => {
     it('return status 200 and an array of comments for the given article_id', () => {
         return request(app)
@@ -259,6 +259,49 @@ describe('PATCH /api/articles/:article_id', () => {
         })
     })
 })
+describe('DELETE /api/comments/:comment_id', () => {
+    it('returns status 204, deletes a specific comment by its id and returns no content', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+        .then(({body}) => {
+           expect(body).toEqual({})
+        })
+    })
+    it('returns status 404 when comment does not exist', () => {
+        return request(app)
+        .delete('/api/comments/99999')
+        .expect(404)
+        .then(({body}) => {
+           expect(body.msg).toEqual('Comment not found')
+        })
+    })
+    it('returns status 400 when comment_id is not an integer', () => {
+        return request(app)
+        .delete('/api/comments/not-an-id')
+        .expect(400)
+        .then(({body}) => {
+           expect(body.msg).toEqual('Invalid input')
+        })
+    })
+})
+describe('GET /api/users', () => {
+    it('returns status 200 and array of user objects with the follwoing keys: username, name, avatar_url', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then(({body}) => {
+            const userExample = {
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String)
+            }
+            body.users.forEach((user) => {
+                expect((user)).toEqual(expect.objectContaining(userExample))
+            })
+        })
+    })
+}) 
 describe('QUERY = topic GET /api/articles', () => {
     it('returns 200 and returns articles of specific topic', () => {
         return request(app)
@@ -291,7 +334,8 @@ describe('GET /api', () => {
                 "GET /api/articles/:article_id" : expect.any(Object),
                 "GET /api/articles" : expect.any(Object),
                 "GET /api/articles/:article_id/comments" : expect.any(Object),
-                "POST /api/articles/:article_id/comments" : expect.any(Object)
+                "POST /api/articles/:article_id/comments": expect.any(Object),
+                'GET /api/users': expect.any(Object)
             }
             expect(body.endpoints).toEqual(expect.objectContaining(endpoints))
         })
