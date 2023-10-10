@@ -4,7 +4,8 @@ const { selectAllTopics } = require("../models/topics_model")
 exports.getArticleById = async (req, res, next) => {
     try {
         const { article_id } = req.params
-        const article = await selectArticleById(article_id)
+        const { comment_count } = req.query
+        const article = await selectArticleById(article_id, comment_count)
         return res.status(200).send({ article })
     } catch (err) {
         next(err)

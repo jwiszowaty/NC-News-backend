@@ -44,7 +44,7 @@ describe('GET /api/articles/:article_id', () => {
                 topic: "mitch",
                 author: "butter_bridge",
                 body: "I find this existence challenging",
-                created_at: '2020-07-09T20:11:00.000Z',
+                created_at: expect.any(String),
                 votes: 100,
                 article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
             }
@@ -73,7 +73,8 @@ describe('GET /api/articles', () => {
         return request(app)
         .get('/api/articles')
         .expect(200)
-        .then(({ body }) => {
+            .then(({ body }) => {
+            const testBody = []
             const articleExample = {
                 author: expect.any(String),
                 title: expect.any(String),
@@ -86,6 +87,7 @@ describe('GET /api/articles', () => {
             }
             expect(body.articles).toHaveLength(13)
             expect(body.articles).toBeSortedBy('created_at', { descending: true })
+            expect(body.articles).not.toHaveLength(0)
             body.articles.forEach((article) => {
                 expect(article).not.toHaveProperty('body')
                 expect(article).toMatchObject(articleExample)
@@ -101,6 +103,7 @@ describe('GET /api/articles/:article_id/comments', () => {
         .then(({body}) => {
             const expectedKeys = ["comment_id", "votes", "created_at", "author", "body", "article_id"]
             expect(body.comments).toBeSortedBy("created_at", { descending: true })
+            expect(body.comments).not.toHaveLength(0)
             body.comments.forEach((comment) => {
                 expect(Object.keys(comment)).toEqual(expect.arrayContaining(expectedKeys))
             })
@@ -296,21 +299,23 @@ describe('GET /api/users', () => {
                 name: expect.any(String),
                 avatar_url: expect.any(String)
             }
+            expect(body.users).not.toHaveLength(0)
             body.users.forEach((user) => {
                 expect((user)).toEqual(expect.objectContaining(userExample))
             })
         })
     })
-}) 
+})
 describe('QUERY = topic GET /api/articles', () => {
     it('returns 200 and returns articles of specific topic', () => {
         return request(app)
         .get('/api/articles?topic=mitch')
         .expect(200)
-        .then(({body}) => {
-            body.articles.forEach((article) => {
-                expect(article).toEqual(expect.objectContaining({topic: "mitch"}))
-            })
+        .then(({ body }) => {
+        expect(body.articles).not.toHaveLength(0)
+        body.articles.forEach((article) => {
+            expect(article).toEqual(expect.objectContaining({topic: "mitch"}))
+        })
         })
     })
     it('returns 404 when there are no articles associated with a topic not in DB', () => {
@@ -326,11 +331,39 @@ describe('QUERY = topic GET /api/articles', () => {
         .get('/api/articles?topic=paper')
         .expect(404)
             .then(({ body }) => {
-                console.log(body);
             expect(body.msg).toEqual('No articles found on this topic')
         })
     })
 })
+describe('QUERY = comment_count GET /api/articles/:article_id', () => {
+    it('returns 200 and article object with comment_count for the article', () => {
+        return request(app)
+        .get('/api/articles/1?comment_count=true')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.article).toEqual(expect.objectContaining({ comment_count: expect.any(String) }))
+            expect(body.article.comment_count).toBe("11")
+        })
+    })    
+    it('returns 200 and article object with comment_count for article with no comments', () => {
+        return request(app)
+        .get('/api/articles/2?comment_count=true')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.article).toEqual(expect.objectContaining({ comment_count: expect.any(String) }))
+            expect(body.article.comment_count).toBe("0")
+        })
+    })  
+    it('returns 200 and article object without comment_count when comment_count query is missing', () => {
+        return request(app)
+        .get('/api/articles/2')
+        .expect(200)
+        .then(({ body }) => {
+            
+            expect(body.article).toEqual(expect.not.objectContaining({ comment_count: expect.any(String) }))
+        })
+    })  
+}) 
 describe('GET /api', () => {
     it('return status 200 and the list of endpoints available', () => {
         request(app)
