@@ -1,6 +1,6 @@
 const db = require("../connection")
 
-exports.selectArticleById = async (article_id, comment_count) => {
+exports.selectArticleById = async (article_id, comment_count = false) => {
     let result;
     if (comment_count) {
         result = await db.query(
