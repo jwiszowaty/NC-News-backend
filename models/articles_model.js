@@ -26,7 +26,6 @@ exports.selectArticleById = async (article_id, comment_count = false) => {
 
 exports.selectAllArticles = async (topic) => {
     let result;
-
     let queryStr = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.article_id) AS comment_count FROM articles
     LEFT JOIN comments
     ON comments.article_id = articles.article_id`

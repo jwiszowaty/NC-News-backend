@@ -340,7 +340,7 @@ describe('QUERY = comment_count GET /api/articles/:article_id', () => {
         return request(app)
         .get('/api/articles/1?comment_count=true')
         .expect(200)
-        .then(({body}) => {
+            .then(({ body }) => {
             expect(body.article).toEqual(expect.objectContaining({ comment_count: expect.any(String) }))
             expect(body.article.comment_count).toBe("11")
         })
@@ -362,7 +362,7 @@ describe('QUERY = comment_count GET /api/articles/:article_id', () => {
             
             expect(body.article).toEqual(expect.not.objectContaining({ comment_count: expect.any(String) }))
         })
-    })  
+    })
 }) 
 describe('GET /api', () => {
     it('return status 200 and the list of endpoints available', () => {
