@@ -335,10 +335,10 @@ describe('QUERY = topic GET /api/articles', () => {
         })
     })
 })
-describe('QUERY = comment_count GET /api/articles/:article_id', () => {
+describe('comment_count GET /api/articles/:article_id', () => {
     it('returns 200 and article object with comment_count for the article', () => {
         return request(app)
-        .get('/api/articles/1?comment_count=true')
+        .get('/api/articles/1')
         .expect(200)
             .then(({ body }) => {
             expect(body.article).toEqual(expect.objectContaining({ comment_count: expect.any(String) }))
@@ -347,20 +347,11 @@ describe('QUERY = comment_count GET /api/articles/:article_id', () => {
     })    
     it('returns 200 and article object with comment_count for article with no comments', () => {
         return request(app)
-        .get('/api/articles/2?comment_count=true')
+        .get('/api/articles/2')
         .expect(200)
         .then(({body}) => {
             expect(body.article).toEqual(expect.objectContaining({ comment_count: expect.any(String) }))
             expect(body.article.comment_count).toBe("0")
-        })
-    })  
-    it('returns 200 and article object without comment_count when comment_count query is missing', () => {
-        return request(app)
-        .get('/api/articles/2')
-        .expect(200)
-        .then(({ body }) => {
-            
-            expect(body.article).toEqual(expect.not.objectContaining({ comment_count: expect.any(String) }))
         })
     })
 }) 
