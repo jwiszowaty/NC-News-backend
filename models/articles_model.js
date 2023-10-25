@@ -49,9 +49,8 @@ exports.updateVotesByArticleId = async (article_id, inc_vote) => {
     `UPDATE articles
     SET
         votes = votes + $1
-    WHERE article_id = $2
-    RETURNING *;`,
+    WHERE article_id = $2;`,
     [inc_vote, article_id]
     )
-    return result.rows[0]
+    return selectArticleById(article_id)
 }
