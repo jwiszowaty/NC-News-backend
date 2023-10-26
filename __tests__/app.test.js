@@ -83,7 +83,7 @@ describe('GET /api/articles', () => {
                 created_at: expect.any(String),
                 votes: expect.any(Number),
                 article_img_url: expect.any(String),
-                comment_count: expect.any(String)
+                comment_count: expect.any(Number)
             }
             expect(body.articles).toHaveLength(13)
             expect(body.articles).toBeSortedBy('created_at', { descending: true })
@@ -341,8 +341,8 @@ describe('comment_count GET /api/articles/:article_id', () => {
         .get('/api/articles/1')
         .expect(200)
             .then(({ body }) => {
-            expect(body.article).toEqual(expect.objectContaining({ comment_count: expect.any(String) }))
-            expect(body.article.comment_count).toBe("11")
+            expect(body.article).toEqual(expect.objectContaining({ comment_count: expect.any(Number) }))
+            expect(body.article.comment_count).toBe(11)
         })
     })    
     it('returns 200 and article object with comment_count for article with no comments', () => {
@@ -350,11 +350,74 @@ describe('comment_count GET /api/articles/:article_id', () => {
         .get('/api/articles/2')
         .expect(200)
         .then(({body}) => {
-            expect(body.article).toEqual(expect.objectContaining({ comment_count: expect.any(String) }))
-            expect(body.article.comment_count).toBe("0")
+            expect(body.article).toEqual(expect.objectContaining({ comment_count: expect.any(Number) }))
+            expect(body.article.comment_count).toBe(0)
         })
     })
 }) 
+describe('SORTING QUERY by any real column,  GET /api/articles', () => {
+    it('returns 200 and returns articles ordered by created_at in desc order by default', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body }) => {
+        expect(body.articles).not.toHaveLength(0)
+        expect(body.articles).toBeSortedBy('created_at', { descending: true })
+        })
+    })
+    it('returns 200 and returns articles ordered by created_at  in asc', () => {
+        return request(app)
+        .get('/api/articles?order=ASC')
+        .expect(200)
+        .then(({ body }) => {
+        expect(body.articles).not.toHaveLength(0)
+        expect(body.articles).toBeSortedBy('created_at', { descending: false })
+        })
+    })
+    it('returns 200 and returns articles ordered by comment_count  in desc order', () => {
+        return request(app)
+        .get('/api/articles?sort_by=comment_count')
+        .expect(200)
+        .then(({ body }) => {
+        expect(body.articles).not.toHaveLength(0)
+        expect(body.articles).toBeSortedBy('comment_count', { descending: true })
+        })
+    })
+    it('returns 200 and returns articles ordered by comment_count  in asc order', () => {
+        return request(app)
+        .get('/api/articles?sort_by=comment_count&order=ASC')
+        .expect(200)
+        .then(({ body }) => {
+        expect(body.articles).not.toHaveLength(0)
+        expect(body.articles).toBeSortedBy('comment_count', { descending: false })
+        })
+    })
+    // it('returns 200 and returns articles ordered by created_at by default', () => {
+    //     return request(app)
+    //     .get('/api/articles')
+    //     .expect(200)
+    //     .then(({ body }) => {
+    //     expect(body.articles).not.toHaveLength(0)
+    //     expect(body.articles).toBeSortedBy('created_at', { descending: true })
+    //     })
+    // })
+    // it('returns 404 when there are no articles associated with a topic not in DB', () => {
+    //     return request(app)
+    //     .get('/api/articles?topic=climate')
+    //     .expect(404)
+    //         .then(({body}) => {
+    //         expect(body.msg).toEqual('No articles found on this topic')
+    //     })
+    // })
+    // it('returns 404 when there are no articles associated with a topic exisiting in DB', () => {
+    //     return request(app)
+    //     .get('/api/articles?topic=paper')
+    //     .expect(404)
+    //         .then(({ body }) => {
+    //         expect(body.msg).toEqual('No articles found on this topic')
+    //     })
+    // })
+})
 describe('GET /api', () => {
     it('return status 200 and the list of endpoints available', () => {
         request(app)
