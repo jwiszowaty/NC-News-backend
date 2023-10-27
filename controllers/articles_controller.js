@@ -16,7 +16,6 @@ exports.getArticles = async (req, res, next) => {
         const articles = await selectAllArticles(topic, sort_by, order)
         return res.status(200).send({articles})
     } catch (err) {
-        console.log(err);
         next(err)
     }
 }

@@ -23,8 +23,11 @@ exports.selectArticleById = async (article_id) => {
 exports.selectAllArticles = async (topic, sort_by = 'created_at', order = 'DESC') => {
     
     const categories = ['author', 'title', 'created_at', 'votes', 'comment_count']
-    if (!['ASC', 'DESC'].includes(order.toUpperCase()) || !categories.includes(sort_by.toLowerCase())) {
+    if (!['ASC', 'DESC'].includes(order.toUpperCase())) {
         return Promise.reject({status: 400, msg: 'Invalid order value'})
+    }
+    if (!categories.includes(sort_by.toLowerCase())) {
+        return Promise.reject({status: 400, msg: 'Invalid category'})
     }
     const sorting = sort_by === 'comment_count' ? 'comment_count' : `articles.${sort_by}`
     let result;

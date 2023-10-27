@@ -392,31 +392,14 @@ describe('SORTING QUERY by any real column,  GET /api/articles', () => {
         expect(body.articles).toBeSortedBy('comment_count', { descending: false })
         })
     })
-    // it('returns 200 and returns articles ordered by created_at by default', () => {
-    //     return request(app)
-    //     .get('/api/articles')
-    //     .expect(200)
-    //     .then(({ body }) => {
-    //     expect(body.articles).not.toHaveLength(0)
-    //     expect(body.articles).toBeSortedBy('created_at', { descending: true })
-    //     })
-    // })
-    // it('returns 404 when there are no articles associated with a topic not in DB', () => {
-    //     return request(app)
-    //     .get('/api/articles?topic=climate')
-    //     .expect(404)
-    //         .then(({body}) => {
-    //         expect(body.msg).toEqual('No articles found on this topic')
-    //     })
-    // })
-    // it('returns 404 when there are no articles associated with a topic exisiting in DB', () => {
-    //     return request(app)
-    //     .get('/api/articles?topic=paper')
-    //     .expect(404)
-    //         .then(({ body }) => {
-    //         expect(body.msg).toEqual('No articles found on this topic')
-    //     })
-    // })
+    it('returns 400 when sort-by query does not correspond to any exsiting catgeory of the table', () => {
+        return request(app)
+        .get('/api/articles?sort_by=animals')
+        .expect(400)
+            .then(({body}) => {
+            expect(body.msg).toEqual('Invalid category')
+        })
+    })
 })
 describe('GET /api', () => {
     it('return status 200 and the list of endpoints available', () => {
